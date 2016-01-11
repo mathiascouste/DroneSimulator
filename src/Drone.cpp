@@ -152,11 +152,6 @@ void Drone::setMotorPower(float ne, float se, float so, float no) {
 	so *= maxPowerSO;
 	no *= maxPowerNO;
 	
-	std::cout << "ne : " << ne << std::endl;
-	std::cout << "se : " << se << std::endl;
-	std::cout << "so : " << so << std::endl;
-	std::cout << "no : " << no << std::endl;
-	
 	torque = CalculateToqueAtPoint (this->body->m_pBody, dVector(0.375f*size,0,0.375f*size), up*ne);
 	force = up*ne;
 	torque += CalculateToqueAtPoint (this->body->m_pBody, dVector(0.375f*size,0,-0.375f*size), up*se);

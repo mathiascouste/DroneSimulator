@@ -1,5 +1,7 @@
 #include "FlyComputerInterface.hpp"
 
+#include <iostream>
+
 using namespace std;
 
 int fci_init() {
