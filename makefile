@@ -10,7 +10,7 @@ simulator.exe : $(SRC)Main.cpp Boite.o Cylindre.o Scene.o Drone.o dMath FlyCompu
 	$(CC) $(OPT) $(BUILD)*.o $(SRC)Main.cpp -o simulator.exe /usr/local/lib/libNewton.so -lGL -lSDL -lGLU -lGLEW
 	
 server.exe : $(SRC)Server.cpp libhttpdrest
-	$(CC) $(OPT) $(BUILD)*.o $(SRC)Server.cpp -o server.exe -lmicrohttpd
+	$(CC) $(OPT) $(BUILD)*.o $(SRC)Server.cpp -o server.exe
 	
 
 #### compilation de lib dMath ####

@@ -86,19 +86,19 @@ void Method::build() {
 }
 
 bool Method::acceptUrl(Request& request) {
-	if (!regex_match (request.url, regex(this->pathRegex, std::regex_constants::extended) )) {
+	if (!regex_match (request.path, regex(this->pathRegex, std::regex_constants::extended) )) {
 		return false;
 	} else {
-		request.url = request.url.substr(this->path.size());
+		request.path = request.path.substr(this->path.size());
 	}
 	switch(this->paramType) {
 		case PARAM_PATH: {
 			for(unsigned int i = 0 ; i < this->params.size() ; i++) {
-				request.url = request.url.substr(1);
+				request.path = request.path.substr(1);
 				smatch m;
-				if(regex_search (request.url, m, regex(this->params[i].pRegex, std::regex_constants::extended))) {
+				if(regex_search (request.path, m, regex(this->params[i].pRegex, std::regex_constants::extended))) {
 					string foundString = m[0];
-					request.url = request.url.substr(foundString.size());
+					request.path = request.path.substr(foundString.size());
 					request.parameters[this->params[i].pName] = foundString;
 				}
 			}

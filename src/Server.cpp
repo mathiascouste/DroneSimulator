@@ -6,7 +6,7 @@
 #include "httpdrest/service.hpp"
 #include "httpdrest/method.hpp"
 
-#define PORT 8080
+#define PORT 10000
 
 using namespace std;
 

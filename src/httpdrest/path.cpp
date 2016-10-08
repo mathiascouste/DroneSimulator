@@ -42,7 +42,7 @@ void Path::handle(Request& request, Response& response)
 	}
 }
 
-bool Path::accept(Request& request)
+bool Path::acceptRequest(Request& request)
 {
 	return this->acceptMethod(request) && this->acceptUrl(request);
 }
@@ -57,11 +57,11 @@ bool Path::acceptMethod(Request& request)
 
 bool Path::acceptUrl(Request& request)
 {
-	size_t pos = request.url.find(this->path);
+	size_t pos = request.path.find(this->path);
 	if(pos != 0) {
 		return false;
 	} else {
-		request.url = request.url.substr(this->path.size());
+		request.path = request.path.substr(this->path.size());
 	}
 	return true;
 }

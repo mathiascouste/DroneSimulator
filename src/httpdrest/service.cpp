@@ -46,7 +46,7 @@ Service* Service::setAction(void(*action)(Request&, Response&))
 
 void Service::handle(Request& req, Response& res) {
 	for(unsigned int i = 0 ; i < this->pathes.size() ; i++) {
-		if(this->pathes[i]->accept(req)) {
+		if(this->pathes[i]->acceptRequest(req)) {
 			this->pathes[i]->handle(req, res);
 			i = this->pathes.size();
 		}

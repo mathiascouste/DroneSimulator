@@ -29,7 +29,7 @@ public:
 	std::string getName();
 	std::string getMethod();
 	virtual void handle(Request&, Response&);
-	virtual bool accept(Request&);
+	virtual bool acceptRequest(Request&);
 	virtual void build() {};
 };
 

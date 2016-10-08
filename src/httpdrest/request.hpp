@@ -5,54 +5,31 @@
 #include <microhttpd.h>
 #include <map>
 
-struct Session
-{
-  /**
-   * We keep all sessions in a linked list.
-   */
-  struct Session *next;
-
-  /**
-   * Unique ID for this session.
-   */
-  char sid[33];
-
-  /**
-   * Reference counter giving the number of connections
-   * currently using this session.
-   */
-  unsigned int rc;
-
-  /**
-   * Time when this session was last active.
-   */
-  time_t start;
-
-  /**
-   * String submitted via form.
-   */
-  char value_1[64];
-
-  /**
-   * Another value submitted via form.
-   */
-  char value_2[64];
-
-};
 
 class Request
 {
 private:
+	int expectedBodySize;
+	int actualBodySize;
 public:
+
+	std::map<std::string, std::string > headers;
+	std::string method;
+	std::string path;
+	std::string version;
+	std::string body;
+
 	Request();
 	~Request();
-	struct Session * session;
-	std::string url;
-	std::string method;
-	const char * upload;
-	size_t uploadSize;
-	struct MHD_PostProcessor *pp;
 	std::map<std::string, std::string> parameters;
+	
+	void pushFirstLine(std::string);
+	void pushHeaderLine(std::string);
+	void pushBody(std::string);
+	bool isComplete();
+	void headerIsComplete();
+	
+	friend std::ostream& operator << (std::ostream& O, const Request& request);
 };
 
 #endif
