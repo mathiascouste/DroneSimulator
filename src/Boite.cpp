@@ -55,6 +55,10 @@ void Boite::Initialiser (NewtonWorld * nWorld, const CVector & taille, const CVe
 
    if (m_pBody == NULL)
       std::cerr << "Impossible d'initialiser le corps.";
+   
+   // On ajoute l'objet à la liste des forces
+   Objet::forces[m_pBody] = stack<dVector>();
+   Objet::torques[m_pBody] = stack<dVector>();
 
    // On détruit la boite de collision, on n'en a plus besoin
    //NewtonReleaseCollision (nWorld, collision);
@@ -110,13 +114,13 @@ void Boite::Dessiner ()
       glMultMatrixf (&matrice.matrice [0][0]); // On multiplie la matrice actuelle
                                                // par la matrice du corps, ainsi
                                                // le corps sera dessiné au bon endroit
-      glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+      //glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
       glColor3f (m_couleur.x, m_couleur.y, m_couleur.z);
-      glColorMaterial (GL_FRONT_AND_BACK, GL_SPECULAR);
-      glColor3f (1.0f, 1.0f, 1.0f);
-      glColorMaterial (GL_FRONT_AND_BACK, GL_EMISSION);
-      glColor3f (0.0f, 0.0f, 0.0f);
-      glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
+      //glColorMaterial (GL_FRONT_AND_BACK, GL_SPECULAR);
+      //glColor3f (1.0f, 1.0f, 1.0f);
+      //glColorMaterial (GL_FRONT_AND_BACK, GL_EMISSION);
+      //glColor3f (0.0f, 0.0f, 0.0f);
+      //glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
 
       glBegin(GL_QUADS);
          // Devant

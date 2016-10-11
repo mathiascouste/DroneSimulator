@@ -2,21 +2,30 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include <math.h>
+
+using namespace std;
 
 Drone* Drone::instance = new Drone();
 
 Drone::Drone()
-:maxPowerNE(1),maxPowerSE(1),maxPowerSO(1),maxPowerNO(1),size(INITIAL_SIZE)
-{}
+:size(INITIAL_SIZE)
+{
+	this->frontMotor = Motor(size/16);
+	this->rightMotor = Motor(size/16);
+	this->backMotor = Motor(size/16);
+	this->leftMotor = Motor(size/16);
+}
 
 Drone::~Drone() {
+	delete this->body;
 }
 
 void Drone::genMaxPower(double maxPower, double moreOrLess) {
-	maxPowerNE = maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess;
-	maxPowerSE = maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess;
-	maxPowerSO = maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess;
-	maxPowerNO = maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess;
+	this->frontMotor.setMaxPower(maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess);
+	this->rightMotor.setMaxPower(maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess);
+	this->backMotor.setMaxPower(maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess);
+	this->leftMotor.setMaxPower(maxPower + ((double)rand())*2*moreOrLess/((double)RAND_MAX) - moreOrLess);
 }
 
 void Drone::initialize() {
@@ -24,26 +33,32 @@ void Drone::initialize() {
     couleur.ReglerCoordonnees(255,0,0);
         
     position.ReglerCoordonnees (0.0f, (double)INITIAL_HEIGHT, 0.0f);
-    //taille.ReglerCoordonnees (0.25f*size, 0.25f*size, 0.25f*size);
     taille.ReglerCoordonnees (size, 0.25f*size, size);
     this->body = new Boite ();
-    this->body->Initialiser (Scene::nWorld, taille, position, true, 1.0f);
+    this->body->Initialiser (Scene::nWorld, taille, position, true, 0.2f);
     this->body->SetColor (couleur);
+    
+    double armLength = sqrt(98)*size/8;
+    
+    this->frontMotor.initialize(0, (double)INITIAL_HEIGHT, armLength);
+    this->rightMotor.initialize(-armLength, (double)INITIAL_HEIGHT, 0);
+    this->backMotor.initialize(0, (double)INITIAL_HEIGHT, -armLength);
+    this->leftMotor.initialize(armLength, (double)INITIAL_HEIGHT, 0);
 }
 
 void Drone::render() {
 	renderBodyAtPos();
-	renderMotorAtPos(0.375f*size,0,0.375f*size);
-	renderMotorAtPos(0.375f*size,0,-0.375f*size);
-	renderMotorAtPos(-0.375f*size,0,-0.375f*size);
-	renderMotorAtPos(-0.375f*size,0,0.375f*size);
+	this->frontMotor.Render();
+	this->rightMotor.Render();
+	this->backMotor.Render();
+	this->leftMotor.Render();
 }
 
 void Drone::renderBodyAtPos() {
 	CVector m_taille;
-	m_taille.x = 0.25f*size;
+	m_taille.x = 0.125f*size;
 	m_taille.y = 0.125f*size;
-	m_taille.z = 0.25f*size;
+	m_taille.z = 0.125f*size;
 	
 	matrix matrice;
    NewtonBodyGetMatrix (body->m_pBody, &matrice.matrice [0][0]);
@@ -53,13 +68,7 @@ void Drone::renderBodyAtPos() {
       glMultMatrixf (&matrice.matrice [0][0]); // On multiplie la matrice actuelle
                                                // par la matrice du corps, ainsi
                                                // le corps sera dessiné au bon endroit
-      glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-      glColor3f (1,0,0);
-      glColorMaterial (GL_FRONT_AND_BACK, GL_SPECULAR);
-      glColor3f (1.0f, 1.0f, 1.0f);
-      glColorMaterial (GL_FRONT_AND_BACK, GL_EMISSION);
-      glColor3f (0.0f, 0.0f, 0.0f);
-      glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
+      glColor3f (1,0,0); // ROUGE
 
       glBegin(GL_QUADS);
          // Devant
@@ -108,58 +117,18 @@ void Drone::renderBodyAtPos() {
    glPopMatrix (); // On rétablit la matrice
 }
 
-void Drone::renderMotorAtPos(float x, float y, float z) {
-	double ray = size*0.125f;
-	double height = size*0.25f;
-	// Toutes les modifications effectuées dans le Callback modifient la matrice de
-   // l'objet, ce qui permet à l'objet de "bouger"
-   matrix matrice;
-   NewtonBodyGetMatrix (body->m_pBody, &matrice.matrice [0][0]);
-
-   glPushMatrix (); // On sauvegarde la matrice actuelle
-   {
-      glMultMatrixf (&matrice.matrice [0][0]); // On multiplie la matrice actuelle
-                                               // par la matrice du corps, ainsi
-                                               // le corps sera dessiné au bon endroit
-      glTranslatef(x,y+height/2,z);
-      glRotatef(90,1,0,0);
-      
-      glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-      glColor3f (0,255,0);
-      glColorMaterial (GL_FRONT_AND_BACK, GL_SPECULAR);
-      glColor3f (1.0f, 1.0f, 1.0f);
-      glColorMaterial (GL_FRONT_AND_BACK, GL_EMISSION);
-      glColor3f (0.0f, 0.0f, 0.0f);
-      glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
-      
-		GLUquadric* params = gluNewQuadric();
-		gluQuadricDrawStyle(params,GLU_FILL);
-		gluCylinder(params,ray,ray,height,20,1);
-
-		gluDeleteQuadric(params);
-   }
-   glPopMatrix (); // On rétablit la matrice
+void Drone::setMotorPower(float front, float right, float back, float left) {
+	this->frontMotor.setPowerOrder(front);
+	this->rightMotor.setPowerOrder(right);
+	this->backMotor.setPowerOrder(back);
+	this->backMotor.setPowerOrder(left);
 }
 
-void Drone::setMotorPower(float ne, float se, float so, float no) {
-	dMatrix matrix;
-	NewtonBodyGetMatrix (this->body->m_pBody, &matrix[0][0]);
-	
-	dVector up = matrix.m_up;
-	
-	ne *= maxPowerNE;
-	se *= maxPowerSE;
-	so *= maxPowerSO;
-	no *= maxPowerNO;
-	
-	torque = CalculateToqueAtPoint (this->body->m_pBody, dVector(0.375f*size,0,0.375f*size), up*ne);
-	force = up*ne;
-	torque += CalculateToqueAtPoint (this->body->m_pBody, dVector(0.375f*size,0,-0.375f*size), up*se);
-	force += up*se;
-	torque += CalculateToqueAtPoint (this->body->m_pBody, dVector(-0.375f*size,0,-0.375f*size), up*so);
-	force += up*so;
-	torque += CalculateToqueAtPoint (this->body->m_pBody, dVector(-0.375f*size,0,0.375f*size), up*no);
-	force += up*no;
+void Drone::calculateForceAndTorque() {
+	this->frontMotor.calculateForceAndTorque();
+	this->rightMotor.calculateForceAndTorque();
+	this->backMotor.calculateForceAndTorque();
+	this->leftMotor.calculateForceAndTorque();
 }
 
 dVector CalculateToqueAtPoint (const NewtonBody* body, const dVector& point, const dVector& force)

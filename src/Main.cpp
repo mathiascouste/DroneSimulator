@@ -6,6 +6,11 @@
 #include "Drone.hpp"
 #include "FlyComputerInterface.hpp"
 
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
+
+using namespace std;
+
 void Prepare ();
 void InitSDL ();
 void InitOGL ();
@@ -14,13 +19,11 @@ void Shutdown ();
 int main (int argc, char *argv [])
 {
 	Scene scene;
-	//Drone drone;
-	Drone::instance->genMaxPower(5,1);
+	
+	Drone::instance->genMaxPower(1.962, 0);
+	
 	InitSDL();
 	InitOGL();
-	if(fci_init() < 0) {
-		
-	}
 
 	// On initialise Newton
 	scene.initialize();
@@ -28,22 +31,17 @@ int main (int argc, char *argv [])
 
    SDL_Event event;
    bool bQuit = false;
-   int i=0;
+   
+   Drone::instance->setMotorPower(1, 0.75, 0.5, 0.25);
 
    while (!bQuit)
    {
       Prepare ();
-      if(i > 100) {
-			if(fci_read() >= 0) {
-				Drone::instance->setMotorPower(fci_getValue("NE"),
-									fci_getValue("SE"),
-									fci_getValue("SO"),
-									fci_getValue("NO"));
-			}
-	  }
-	  i++;
+	  Drone::instance->calculateForceAndTorque();
+	  
       scene.render();
 	  Drone::instance->render();
+	  
 	  SDL_GL_SwapBuffers();
 
       if (SDL_PollEvent (&event))
@@ -58,6 +56,9 @@ int main (int argc, char *argv [])
                break;
          }
       }
+      
+      std::this_thread::sleep_for (std::chrono::milliseconds(1000/80));
+      
     }
 
    return EXIT_SUCCESS;
@@ -100,18 +101,6 @@ void InitOGL ()
    glLoadIdentity (); // On rétablit la matrice identité
 
    glEnable (GL_DEPTH_TEST);
-   glEnable (GL_COLOR_MATERIAL);
-   glEnable (GL_LIGHTING);
-
-   glEnable (GL_LIGHT0);
-   GLfloat LampeDiffuse [] = {1.0f, 1.0f, 1.0f};
-   GLfloat LampeAmbient [] = {0.75f, 0.75f, 0.75f};
-   GLfloat LampePosition [] = {6.0f, 10.0f, 5.0f, 1.0f};
-
-   glLightfv (GL_LIGHT0, GL_DIFFUSE, LampeDiffuse);
-   glLightfv (GL_LIGHT0, GL_SPECULAR, LampeDiffuse);
-   glLightfv (GL_LIGHT0, GL_AMBIENT, LampeAmbient);
-   glLightfv (GL_LIGHT0, GL_POSITION, LampePosition);
 }
 
 void Prepare ()

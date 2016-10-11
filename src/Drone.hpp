@@ -3,26 +3,24 @@
 
 #include <Newton.h>
 #include <stdlib.h>
-#include <stdlib.h>
 
 #include "dMath/dVector.h"
 #include "dMath/dMatrix.h"
 #include "CVector.hpp"
 #include "Scene.hpp"
 #include "Cylindre.hpp"
+#include "Motor.hpp"
 
-#define INITIAL_HEIGHT -4
+#define INITIAL_HEIGHT 5
 #define INITIAL_SIZE 3
 
 class Drone
 {
 private:
-	double maxPowerNE, maxPowerSE, maxPowerSO, maxPowerNO;
-	Boite *motorNE, *motorSE, *motorSO, *motorNO;
+	Motor frontMotor, rightMotor, backMotor, leftMotor;
 	Boite *body;
 	double size;
 	void renderBodyAtPos();
-	void renderMotorAtPos(float,float,float);
 public:
 	Drone();
 	~Drone();
@@ -33,7 +31,8 @@ public:
 	static Drone * instance;
 	
 	void genMaxPower(double maxPower, double moreOrLess);
-	void setMotorPower(float ne, float se, float so, float no);
+	void setMotorPower(float front, float right, float back, float left);
+	void calculateForceAndTorque();
 };
 
 dVector CalculateToqueAtPoint (const NewtonBody* body, const dVector& point, const dVector& force);

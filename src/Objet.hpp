@@ -4,6 +4,9 @@
 #include <iostream>
 #include <Newton.h> // Header pour utiliser le Newton Engine
 #include "CVector.hpp"
+#include <map>
+#include <stack>
+#include "dMath/dVector.h"
 
 
 // Structure matrix
@@ -27,7 +30,10 @@ class Objet
       virtual void SetColor (const CVector &) = 0;
       NewtonBody * m_pBody; // Pointeur vers un NewtonBody
 
-		CVector addTorque(CVector torque);
+	  CVector addTorque(CVector torque);
+	  
+	  static std::map<const NewtonBody *, std::stack<dVector> > forces;
+	  static std::map<const NewtonBody *, std::stack<dVector> > torques;
 
    protected:
       float m_masse; // Masse de l'objet

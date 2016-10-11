@@ -21,7 +21,7 @@ void Scene::initialize() {
 void Scene::initGround() {
 	
    // On définit le sol
-   CVector taille (20.0f, 0.1f, 20.0f);
+   CVector taille (80.0f, 0.1f, 80.0f);
    CVector position (0.0f, -5.0f, 0.0f);
    CVector couleur (100, 100, 100);
 
@@ -37,7 +37,7 @@ void Scene::render() {
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glLoadIdentity ();
 
-   gluLookAt (0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+   gluLookAt (0.0f, 0.0f, 40.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
    // Puis quelques rotations afin de bien voir le sol
    glRotatef(15, 1, 0, 0);

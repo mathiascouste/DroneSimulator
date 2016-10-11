@@ -6,7 +6,7 @@ INCLUDES = /usr/local/include:/usr/lib/include
 
 all : simulator.exe server.exe
 
-simulator.exe : $(SRC)Main.cpp Boite.o Cylindre.o Scene.o Drone.o dMath FlyComputerInterface.o
+simulator.exe : $(SRC)Main.cpp Boite.o Cylindre.o Scene.o Motor.o Drone.o dMath FlyComputerInterface.o
 	$(CC) $(OPT) $(BUILD)*.o $(SRC)Main.cpp -o simulator.exe /usr/local/lib/libNewton.so -lGL -lSDL -lGLU -lGLEW
 	
 server.exe : $(SRC)Server.cpp libhttpdrest
@@ -48,6 +48,8 @@ Cylindre.o : $(SRC)Cylindre.hpp $(SRC)Cylindre.cpp Objet.o
 	
 Scene.o : $(SRC)Scene.hpp $(SRC)Scene.cpp
 	$(CC) $(OPT) -I $(INCLUDES) -c $(SRC)Scene.cpp -o $(BUILD)Scene.o
+Motor.o : $(SRC)Motor.hpp $(SRC)Motor.cpp
+	$(CC) $(OPT) -I $(INCLUDES) -c $(SRC)Motor.cpp -o $(BUILD)Motor.o
 Drone.o : $(SRC)Drone.hpp $(SRC)Drone.cpp
 	$(CC) $(OPT) -I $(INCLUDES) -c $(SRC)Drone.cpp -o $(BUILD)Drone.o
 	

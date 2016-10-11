@@ -13,5 +13,5 @@ int fci_read() {
 }
 
 double fci_getValue(string) {
-	return 0.99f;
+	return 1.0f;
 }
